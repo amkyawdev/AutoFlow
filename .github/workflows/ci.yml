@@ -44,3 +44,4 @@ jobs:
         run: |
           echo "Checking frontend files..."
           find frontend/src -name "*.html" -o -name "*.css" -o -name "*.js" | head -20
+
