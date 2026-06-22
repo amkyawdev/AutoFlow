@@ -137,6 +137,49 @@
         </div>
     </div>
 
+    <script>
+        // Connect buttons
+        const connectBtns = document.querySelectorAll('.connect-btn');
+        const modal = document.getElementById('connect-modal');
+        const modalClose = modal?.querySelector('.modal-close');
+        const modalCancel = modal?.querySelector('.modal-cancel');
+        const modalOverlay = modal?.querySelector('.modal-overlay');
+        const connectConfirm = document.getElementById('connect-confirm');
+
+        let currentService = null;
+
+        function openModal(service) {
+            currentService = service;
+            document.getElementById('modal-title').textContent = 'Connect ' + service;
+            modal?.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal?.classList.add('hidden');
+            document.getElementById('api-key').value = '';
+            currentService = null;
+        }
+
+        connectBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                openModal(btn.dataset.service);
+            });
+        });
+
+        if (modalClose) modalClose.addEventListener('click', closeModal);
+        if (modalCancel) modalCancel.addEventListener('click', closeModal);
+        if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+
+        if (connectConfirm) connectConfirm.addEventListener('click', () => {
+            const apiKey = document.getElementById('api-key')?.value;
+            if (!apiKey) {
+                alert('Please enter an API key');
+                return;
+            }
+            alert('Connect ' + currentService + ': API integration coming soon');
+            closeModal();
+        });
+    </script>
     <script type="module" src="scripts/core/app.js"></script>
 </body>
 </html>

@@ -127,6 +127,23 @@
         </main>
     </div>
 
+    <script>
+        // New Workflow button
+        const newWorkflowBtn = document.querySelector('.content-header .btn-primary');
+        if (newWorkflowBtn) newWorkflowBtn.addEventListener('click', () => window.location.href = 'workflows.html');
+
+        // Quick action buttons
+        const quickActions = document.querySelectorAll('.quick-action-card');
+        quickActions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const label = btn.querySelector('.qa-label')?.textContent;
+                if (label === 'Create Workflow') window.location.href = 'workflows.html';
+                else if (label === 'Add Integration') window.location.href = 'integrations.html';
+                else if (label === 'View Analytics') alert('Analytics coming soon!');
+                else if (label === 'Get Help') window.location.href = 'help.html';
+            });
+        });
+    </script>
     <script type="module" src="scripts/core/app.js"></script>
 </body>
 </html>

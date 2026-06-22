@@ -121,6 +121,52 @@
         </div>
     </div>
 
+    <script>
+        // New Workflow buttons
+        const newWorkflowBtn = document.getElementById('new-workflow-btn');
+        const createWorkflowBtn = document.querySelector('.empty-state-card .btn');
+        const modalCreateBtn = document.querySelector('.modal-footer .btn-primary');
+
+        function openModal() {
+            document.getElementById('workflow-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('workflow-modal').classList.add('hidden');
+        }
+
+        if (newWorkflowBtn) newWorkflowBtn.addEventListener('click', openModal);
+        if (createWorkflowBtn) createWorkflowBtn.addEventListener('click', openModal);
+        
+        // Modal close
+        const modal = document.getElementById('workflow-modal');
+        const modalClose = modal?.querySelector('.modal-close');
+        const modalCancel = modal?.querySelector('.modal-cancel');
+        const modalOverlay = modal?.querySelector('.modal-overlay');
+        
+        if (modalClose) modalClose.addEventListener('click', closeModal);
+        if (modalCancel) modalCancel.addEventListener('click', closeModal);
+        if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+        
+        // Create button in modal
+        if (modalCreateBtn) modalCreateBtn.addEventListener('click', () => {
+            const name = document.getElementById('workflow-name')?.value;
+            if (!name) {
+                alert('Please enter a workflow name');
+                return;
+            }
+            alert('Workflow creation: ' + name + ' (API integration coming soon)');
+            closeModal();
+        });
+
+        // Trigger options
+        document.querySelectorAll('.trigger-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.trigger-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+            });
+        });
+    </script>
     <script type="module" src="scripts/core/app.js"></script>
 </body>
 </html>

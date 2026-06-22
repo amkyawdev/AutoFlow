@@ -311,40 +311,55 @@
         const chatClose = document.getElementById('chat-close');
 
         function toggleMobileMenu() {
-            mobileMenuBtn.classList.toggle('active');
-            mobileNav.classList.toggle('open');
-            mobileOverlay.classList.toggle('visible');
+            if (mobileMenuBtn) mobileMenuBtn.classList.toggle('active');
+            if (mobileNav) mobileNav.classList.toggle('open');
+            if (mobileOverlay) mobileOverlay.classList.toggle('visible');
             document.body.classList.toggle('menu-open');
         }
 
         function closeMobileMenu() {
-            mobileMenuBtn.classList.remove('active');
-            mobileNav.classList.remove('open');
-            mobileOverlay.classList.remove('visible');
+            if (mobileMenuBtn) mobileMenuBtn.classList.remove('active');
+            if (mobileNav) mobileNav.classList.remove('open');
+            if (mobileOverlay) mobileOverlay.classList.remove('visible');
             document.body.classList.remove('menu-open');
         }
 
         function toggleChat() {
-            chatWidget.classList.toggle('hidden');
-            chatFab.classList.toggle('hidden');
+            if (chatWidget) chatWidget.classList.toggle('hidden');
+            if (chatFab) chatFab.classList.toggle('hidden');
         }
 
-        mobileMenuBtn?.addEventListener('click', toggleMobileMenu);
-        mobileOverlay?.addEventListener('click', closeMobileMenu);
-        chatToggle?.addEventListener('click', toggleChat);
-        chatFab?.addEventListener('click', toggleChat);
-        chatClose?.addEventListener('click', toggleChat);
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
+        if (chatToggle) chatToggle.addEventListener('click', toggleChat);
+        if (chatFab) chatFab.addEventListener('click', toggleChat);
+        if (chatClose) chatClose.addEventListener('click', toggleChat);
 
         // Close mobile menu on link click
         document.querySelectorAll('.nav-mobile-link').forEach(link => {
             link.addEventListener('click', closeMobileMenu);
         });
 
-        // Login buttons sync
+        // Hero buttons - go to dashboard
+        const heroBtnPrimary = document.querySelector('.hero-actions .btn-primary');
+        const heroBtnSecondary = document.querySelector('.hero-actions .btn-secondary');
+        if (heroBtnPrimary) heroBtnPrimary.addEventListener('click', () => window.location.href = 'dashboard.html');
+        if (heroBtnSecondary) heroBtnSecondary.addEventListener('click', () => {
+            // Scroll to features section as demo
+            document.querySelector('.features')?.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Header login button
         const loginBtn = document.getElementById('login-btn');
+        if (loginBtn) loginBtn.addEventListener('click', () => window.location.href = 'dashboard.html');
+
+        // Mobile login button
         const loginBtnMobile = document.getElementById('login-btn-mobile');
-        loginBtnMobile?.addEventListener('click', () => {
-            window.location.href = 'dashboard.html';
+        if (loginBtnMobile) loginBtnMobile.addEventListener('click', () => window.location.href = 'dashboard.html');
+
+        // Pricing buttons
+        document.querySelectorAll('.pricing-card .btn').forEach(btn => {
+            btn.addEventListener('click', () => window.location.href = 'dashboard.html');
         });
     </script>
     <script type="module" src="scripts/core/app.js"></script>
