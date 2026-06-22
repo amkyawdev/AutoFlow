@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Automatic Workflow - Home</title>
     <link rel="stylesheet" href="../styles/global.css">
     <link rel="stylesheet" href="../styles/tokens.css">
@@ -11,36 +11,65 @@
 </head>
 <body>
     <div id="app">
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" id="mobile-overlay"></div>
+        
         <!-- Header -->
         <header class="header">
             <div class="container">
                 <div class="header-content">
-                    <div class="logo">
+                    <a href="index.html" class="logo">
                         <span class="logo-icon">⚡</span>
-                        <span class="logo-text">Automatic Workflow</span>
-                    </div>
-                    <nav class="nav">
+                        <span class="logo-text">AutoFlow</span>
+                    </a>
+                    
+                    <!-- Desktop Navigation -->
+                    <nav class="nav-desktop">
                         <a href="index.html" class="nav-link active">Home</a>
                         <a href="dashboard.html" class="nav-link">Dashboard</a>
                         <a href="workflows.html" class="nav-link">Workflows</a>
                         <a href="integrations.html" class="nav-link">Integrations</a>
                         <a href="settings.html" class="nav-link">Settings</a>
                     </nav>
+                    
                     <div class="header-actions">
                         <button id="chat-toggle" class="btn btn-icon" aria-label="Open chat">
                             💬
                         </button>
-                        <button id="login-btn" class="btn btn-primary">Get Started</button>
+                        <button id="login-btn" class="btn btn-primary btn-sm">Get Started</button>
+                        
+                        <!-- Mobile Menu Toggle -->
+                        <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="Menu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
                     </div>
                 </div>
             </div>
         </header>
 
+        <!-- Mobile Navigation -->
+        <nav class="nav-mobile" id="mobile-nav">
+            <a href="index.html" class="nav-mobile-link active">Home</a>
+            <a href="dashboard.html" class="nav-mobile-link">Dashboard</a>
+            <a href="workflows.html" class="nav-mobile-link">Workflows</a>
+            <a href="integrations.html" class="nav-mobile-link">Integrations</a>
+            <a href="settings.html" class="nav-mobile-link">Settings</a>
+            <div class="nav-mobile-actions">
+                <button id="login-btn-mobile" class="btn btn-primary btn-block">Get Started</button>
+            </div>
+        </nav>
+
         <!-- Hero Section -->
         <section class="hero">
             <div class="container">
                 <div class="hero-content">
-                    <h1 class="hero-title">Build Workflows That <span class="highlight">Work</span> For You</h1>
+                    <div class="hero-badge">✨ Now with AI Assistant</div>
+                    <h1 class="hero-title">
+                        Build Workflows That <br>
+                        <span class="gradient-text">Work</span> For You
+                    </h1>
                     <p class="hero-subtitle">
                         Create powerful automations without code. Connect your favorite services,
                         set triggers, and let Automatic Workflow handle the rest.
@@ -70,7 +99,10 @@
         <!-- Features Section -->
         <section class="features">
             <div class="container">
-                <h2 class="section-title">Everything You Need to Automate</h2>
+                <div class="section-header">
+                    <h2 class="section-title">Everything You Need to Automate</h2>
+                    <p class="section-subtitle">Powerful features to streamline your workflows</p>
+                </div>
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">🔗</div>
@@ -107,7 +139,10 @@
         <!-- Integrations Section -->
         <section class="integrations">
             <div class="container">
-                <h2 class="section-title">Popular Integrations</h2>
+                <div class="section-header">
+                    <h2 class="section-title">Popular Integrations</h2>
+                    <p class="section-subtitle">Connect with your favorite tools</p>
+                </div>
                 <div class="integrations-grid">
                     <div class="integration-item">
                         <span class="integration-icon">🤖</span>
@@ -141,7 +176,10 @@
         <!-- Pricing Section -->
         <section class="pricing">
             <div class="container">
-                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <div class="section-header">
+                    <h2 class="section-title">Simple, Transparent Pricing</h2>
+                    <p class="section-subtitle">Choose the plan that fits your needs</p>
+                </div>
                 <div class="pricing-grid">
                     <div class="pricing-card">
                         <div class="pricing-header">
@@ -193,10 +231,10 @@
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-brand">
-                        <div class="logo">
+                        <a href="index.html" class="logo">
                             <span class="logo-icon">⚡</span>
-                            <span class="logo-text">Automatic Workflow</span>
-                        </div>
+                            <span class="logo-text">AutoFlow</span>
+                        </a>
                         <p class="footer-tagline">Automate everything. Focus on what matters.</p>
                     </div>
                     <div class="footer-links">
@@ -257,6 +295,58 @@
         </div>
     </div>
 
+    <!-- Chat Floating Button -->
+    <button id="chat-fab" class="chat-fab" aria-label="Open chat">
+        💬
+    </button>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileNav = document.getElementById('mobile-nav');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const chatFab = document.getElementById('chat-fab');
+        const chatWidget = document.getElementById('chat-widget');
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatClose = document.getElementById('chat-close');
+
+        function toggleMobileMenu() {
+            mobileMenuBtn.classList.toggle('active');
+            mobileNav.classList.toggle('open');
+            mobileOverlay.classList.toggle('visible');
+            document.body.classList.toggle('menu-open');
+        }
+
+        function closeMobileMenu() {
+            mobileMenuBtn.classList.remove('active');
+            mobileNav.classList.remove('open');
+            mobileOverlay.classList.remove('visible');
+            document.body.classList.remove('menu-open');
+        }
+
+        function toggleChat() {
+            chatWidget.classList.toggle('hidden');
+            chatFab.classList.toggle('hidden');
+        }
+
+        mobileMenuBtn?.addEventListener('click', toggleMobileMenu);
+        mobileOverlay?.addEventListener('click', closeMobileMenu);
+        chatToggle?.addEventListener('click', toggleChat);
+        chatFab?.addEventListener('click', toggleChat);
+        chatClose?.addEventListener('click', toggleChat);
+
+        // Close mobile menu on link click
+        document.querySelectorAll('.nav-mobile-link').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        // Login buttons sync
+        const loginBtn = document.getElementById('login-btn');
+        const loginBtnMobile = document.getElementById('login-btn-mobile');
+        loginBtnMobile?.addEventListener('click', () => {
+            window.location.href = 'dashboard.html';
+        });
+    </script>
     <script type="module" src="../scripts/core/app.js"></script>
 </body>
 </html>
