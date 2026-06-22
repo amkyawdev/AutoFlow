@@ -18,13 +18,29 @@ jobs:
         run: |
           pip install ruff
           cd backend
-          ruff check src/
+          ruff check .
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt -q
+      - name: Test imports
+        run: |
+          cd backend
+          python -c "from src.presentation.app import app; print('✅ App imports successfully')"
 
   frontend-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check HTML/CSS/JS
+      - name: Check frontend files
         run: |
           echo "Checking frontend files..."
           find frontend/src -name "*.html" -o -name "*.css" -o -name "*.js" | head -20
