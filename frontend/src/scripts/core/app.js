@@ -1,100 +1,96 @@
-/**
- * Main Application Entry Point
- * Automatic Workflow
- */
-
-// Initialize app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Automatic Workflow initialized');
+// Main Application - Automatic Workflow
+(function() {
+    document.addEventListener('DOMContentLoaded', init);
     
-    // Initialize Chat Widget
-    initChatWidget();
+    function init() {
+        console.log('App initialized');
+        initMobileMenu();
+        initChat();
+    }
     
-    // Initialize mobile menu
-    initMobileMenu();
-    
-    // Check auth and update login button
-    checkAuth();
-});
-
-function initChatWidget() {
-    const chatWidget = document.getElementById('chat-widget');
-    const chatToggle = document.getElementById('chat-toggle');
-    const chatClose = document.getElementById('chat-close');
-    const chatFab = document.getElementById('chat-fab');
-    
-    if (chatWidget && typeof ChatWidget !== 'undefined') {
-        const chat = new ChatWidget({
-            container: chatWidget,
-            apiEndpoint: '/api/v1/chat'
-        });
+    function initMobileMenu() {
+        var btn = document.getElementById('mobile-menu-btn');
+        var nav = document.getElementById('mobile-nav');
+        var overlay = document.getElementById('mobile-overlay');
+        if (!btn || !nav) return;
         
-        // Toggle chat on button click
-        if (chatToggle) {
-            chatToggle.addEventListener('click', () => chat.toggle());
+        btn.onclick = function() {
+            btn.classList.toggle('active');
+            nav.classList.toggle('open');
+            if (overlay) overlay.classList.toggle('visible');
+            document.body.classList.toggle('menu-open');
+        };
+        
+        if (overlay) overlay.onclick = function() {
+            btn.classList.remove('active');
+            nav.classList.remove('open');
+            overlay.classList.remove('visible');
+            document.body.classList.remove('menu-open');
+        };
+        
+        var links = document.querySelectorAll('.nav-mobile-link');
+        for (var i = 0; i < links.length; i++) {
+            links[i].onclick = function() {
+                btn.classList.remove('active');
+                nav.classList.remove('open');
+                if (overlay) overlay.classList.remove('visible');
+                document.body.classList.remove('menu-open');
+            };
         }
-        if (chatClose) {
-            chatClose.addEventListener('click', () => chat.toggle());
-        }
-        if (chatFab) {
-            chatFab.addEventListener('click', () => chat.toggle());
+    }
+    
+    function initChat() {
+        var widget = document.getElementById('chat-widget');
+        var fab = document.getElementById('chat-fab');
+        var close = document.getElementById('chat-close');
+        var send = document.getElementById('chat-send');
+        
+        if (!widget) return;
+        
+        if (fab) fab.onclick = function() { widget.classList.remove('hidden'); fab.style.display = 'none'; };
+        if (close) close.onclick = function() { widget.classList.add('hidden'); fab.style.display = 'flex'; };
+        
+        if (send) send.onclick = sendMsg;
+        
+        var inp = document.getElementById('chat-input');
+        if (inp) inp.onkeypress = function(e) { if (e.key === 'Enter') sendMsg(); };
+        
+        var chips = document.querySelectorAll('.suggestion-chip');
+        for (var j = 0; j < chips.length; j++) {
+            chips[j].onclick = function() {
+                var input = document.getElementById('chat-input');
+                if (input) { input.value = this.textContent; sendMsg(); }
+            };
         }
         
-        // Initially hide widget, show FAB
-        if (chatWidget) chatWidget.classList.add('hidden');
-        if (chatFab) chatFab.classList.remove('hidden');
-    }
-}
-
-function initMobileMenu() {
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileNav = document.getElementById('mobile-nav');
-    const mobileOverlay = document.getElementById('mobile-overlay');
-    
-    function toggleMenu() {
-        mobileMenuBtn?.classList.toggle('active');
-        mobileNav?.classList.toggle('open');
-        mobileOverlay?.classList.toggle('visible');
-        document.body.classList.toggle('menu-open');
-    }
-    
-    function closeMenu() {
-        mobileMenuBtn?.classList.remove('active');
-        mobileNav?.classList.remove('open');
-        mobileOverlay?.classList.remove('visible');
-        document.body.classList.remove('menu-open');
-    }
-    
-    mobileMenuBtn?.addEventListener('click', toggleMenu);
-    mobileOverlay?.addEventListener('click', closeMenu);
-    
-    // Close menu on link click
-    document.querySelectorAll('.nav-mobile-link').forEach(link => {
-        link.addEventListener('click', closeMenu);
-    });
-}
-
-function checkAuth() {
-    const token = localStorage.getItem('autoflow_token');
-    const loginBtn = document.getElementById('login-btn');
-    const loginBtnMobile = document.getElementById('login-btn-mobile');
-    
-    if (token) {
-        if (loginBtn) {
-            loginBtn.textContent = 'Dashboard';
-            loginBtn.onclick = () => window.location.href = 'dashboard.html';
+        function sendMsg() {
+            var input = document.getElementById('chat-input');
+            var msgs = document.getElementById('chat-messages');
+            if (!input || !input.value.trim() || !msgs) return;
+            
+            var msg = input.value.trim();
+            input.value = '';
+            
+            var div = document.createElement('div');
+            div.className = 'chat-message user';
+            div.innerHTML = '<div class="message-content">' + msg + '</div>';
+            msgs.appendChild(div);
+            
+            var botDiv = document.createElement('div');
+            botDiv.className = 'chat-message bot';
+            botDiv.innerHTML = '<div class="message-content">' + getResponse(msg) + '</div>';
+            msgs.appendChild(botDiv);
+            msgs.scrollTop = msgs.scrollHeight;
         }
-        if (loginBtnMobile) {
-            loginBtnMobile.textContent = 'Dashboard';
-            loginBtnMobile.onclick = () => window.location.href = 'dashboard.html';
+        
+        function getResponse(msg) {
+            msg = msg.toLowerCase();
+            if (msg.includes('hello')) return 'Hello! How can I help you?';
+            if (msg.includes('workflow')) return 'Create workflows at the Workflows page.';
+            if (msg.includes('api')) return 'Manage API keys in Settings.';
+            if (msg.includes('price')) return 'Free (100 runs), Pro ($29/mo), Enterprise (custom).';
+            if (msg.includes('help')) return 'I help with workflows, integrations, API keys, pricing.';
+            return 'Ask me about workflows, integrations, or pricing!';
         }
     }
-}
-
-// Toast notification helper
-window.showToast = function(message, type = 'info') {
-    console.log(`[${type.toUpperCase()}] ${message}`);
-};
-
-// Export for module usage
-export { checkAuth, initChatWidget, initMobileMenu };
+})();
