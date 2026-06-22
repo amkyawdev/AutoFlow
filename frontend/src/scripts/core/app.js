@@ -3,156 +3,98 @@
  * Automatic Workflow
  */
 
-import { ChatWidget } from '../../components/chat/ChatWidget.js';
-import { Toast } from '../../components/common/Toast.js';
-import { workflowStore } from '../stores/workflowStore.js';
-import { authStore } from '../stores/authStore.js';
-import { uiStore } from '../stores/uiStore.js';
+// Initialize app when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Automatic Workflow initialized');
+    
+    // Initialize Chat Widget
+    initChatWidget();
+    
+    // Initialize mobile menu
+    initMobileMenu();
+    
+    // Check auth and update login button
+    checkAuth();
+});
 
-class App {
-    constructor() {
-        this.chatWidget = null;
-        this.toastContainer = null;
-        this.init();
-    }
-
-    init() {
-        this.setupEventListeners();
-        this.initChatWidget();
-        this.initStores();
-        this.checkAuth();
-        console.log('Automatic Workflow initialized');
-    }
-
-    setupEventListeners() {
-        // Chat toggle button
-        const chatToggle = document.getElementById('chat-toggle');
+function initChatWidget() {
+    const chatWidget = document.getElementById('chat-widget');
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatClose = document.getElementById('chat-close');
+    const chatFab = document.getElementById('chat-fab');
+    
+    if (chatWidget && typeof ChatWidget !== 'undefined') {
+        const chat = new ChatWidget({
+            container: chatWidget,
+            apiEndpoint: '/api/v1/chat'
+        });
+        
+        // Toggle chat on button click
         if (chatToggle) {
-            chatToggle.addEventListener('click', () => this.toggleChat());
+            chatToggle.addEventListener('click', () => chat.toggle());
         }
-
-        // Login button
-        const loginBtn = document.getElementById('login-btn');
-        if (loginBtn) {
-            loginBtn.addEventListener('click', () => this.handleLogin());
+        if (chatClose) {
+            chatClose.addEventListener('click', () => chat.toggle());
         }
-
-        // Modal close buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-close') || 
-                e.target.classList.contains('modal-cancel') ||
-                e.target.classList.contains('modal-overlay')) {
-                this.closeAllModals();
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.closeAllModals();
-            }
-        });
-
-        // New workflow button
-        const newWorkflowBtn = document.getElementById('new-workflow-btn');
-        if (newWorkflowBtn) {
-            newWorkflowBtn.addEventListener('click', () => this.openWorkflowModal());
+        if (chatFab) {
+            chatFab.addEventListener('click', () => chat.toggle());
         }
-
-        // Connect buttons
-        document.querySelectorAll('.connect-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const service = e.target.dataset.service;
-                this.openConnectModal(service);
-            });
-        });
-    }
-
-    initChatWidget() {
-        const chatWidget = document.getElementById('chat-widget');
-        const chatClose = document.getElementById('chat-close');
         
-        if (chatWidget) {
-            this.chatWidget = new ChatWidget({
-                container: chatWidget,
-                apiEndpoint: '/api/v1/chat'
-            });
-
-            if (chatClose) {
-                chatClose.addEventListener('click', () => this.toggleChat());
-            }
-        }
-    }
-
-    initStores() {
-        // Initialize stores from localStorage
-        workflowStore.loadFromStorage();
-        authStore.loadFromStorage();
-    }
-
-    checkAuth() {
-        const isAuthenticated = authStore.isAuthenticated();
-        const loginBtn = document.getElementById('login-btn');
-        
-        if (isAuthenticated && loginBtn) {
-            loginBtn.textContent = 'Dashboard';
-            loginBtn.onclick = () => {
-                window.location.href = 'dashboard.html';
-            };
-        }
-    }
-
-    toggleChat() {
-        if (this.chatWidget) {
-            this.chatWidget.toggle();
-        }
-    }
-
-    handleLogin() {
-        // Redirect to login or open auth modal
-        window.location.href = 'dashboard.html';
-    }
-
-    openWorkflowModal() {
-        const modal = document.getElementById('workflow-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            uiStore.setModalOpen(true);
-        }
-    }
-
-    openConnectModal(service) {
-        const modal = document.getElementById('connect-modal');
-        const title = document.getElementById('modal-title');
-        
-        if (modal && title) {
-            title.textContent = `Connect ${service}`;
-            modal.dataset.service = service;
-            modal.classList.remove('hidden');
-            uiStore.setModalOpen(true);
-        }
-    }
-
-    closeAllModals() {
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.classList.add('hidden');
-        });
-        uiStore.setModalOpen(false);
-    }
-
-    showToast(message, type = 'info') {
-        if (!this.toastContainer) {
-            this.toastContainer = Toast.createContainer();
-            document.body.appendChild(this.toastContainer);
-        }
-        Toast.show(this.toastContainer, message, type);
+        // Initially hide widget, show FAB
+        if (chatWidget) chatWidget.classList.add('hidden');
+        if (chatFab) chatFab.classList.remove('hidden');
     }
 }
 
-// Initialize app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.app = new App();
-});
+function initMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    
+    function toggleMenu() {
+        mobileMenuBtn?.classList.toggle('active');
+        mobileNav?.classList.toggle('open');
+        mobileOverlay?.classList.toggle('visible');
+        document.body.classList.toggle('menu-open');
+    }
+    
+    function closeMenu() {
+        mobileMenuBtn?.classList.remove('active');
+        mobileNav?.classList.remove('open');
+        mobileOverlay?.classList.remove('visible');
+        document.body.classList.remove('menu-open');
+    }
+    
+    mobileMenuBtn?.addEventListener('click', toggleMenu);
+    mobileOverlay?.addEventListener('click', closeMenu);
+    
+    // Close menu on link click
+    document.querySelectorAll('.nav-mobile-link').forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+}
 
-// Export for use in other modules
-export { App };
+function checkAuth() {
+    const token = localStorage.getItem('autoflow_token');
+    const loginBtn = document.getElementById('login-btn');
+    const loginBtnMobile = document.getElementById('login-btn-mobile');
+    
+    if (token) {
+        if (loginBtn) {
+            loginBtn.textContent = 'Dashboard';
+            loginBtn.onclick = () => window.location.href = 'dashboard.html';
+        }
+        if (loginBtnMobile) {
+            loginBtnMobile.textContent = 'Dashboard';
+            loginBtnMobile.onclick = () => window.location.href = 'dashboard.html';
+        }
+    }
+}
+
+// Toast notification helper
+window.showToast = function(message, type = 'info') {
+    console.log(`[${type.toUpperCase()}] ${message}`);
+};
+
+// Export for module usage
+export { checkAuth, initChatWidget, initMobileMenu };
