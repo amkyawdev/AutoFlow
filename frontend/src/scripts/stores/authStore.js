@@ -99,12 +99,14 @@ class AuthStore {
     }
 
     getExecutionsUsed() {
-        return this.user?.executionsUsed || 0;
+        // Backend returns executions_used, frontend uses executionsUsed
+        return this.user?.executions_used || this.user?.executionsUsed || 0;
     }
 
     incrementExecutions() {
         if (this.user) {
-            this.user.executionsUsed = (this.user.executionsUsed || 0) + 1;
+            const current = this.user.executions_used || this.user.executionsUsed || 0;
+            this.user.executions_used = current + 1;
             this.saveToStorage();
             this.notify();
         }

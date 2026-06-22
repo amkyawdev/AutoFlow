@@ -1,11 +1,96 @@
 // Main Application - Automatic Workflow
+import { authService } from '../services/authService.js';
+import { authStore } from '../stores/authStore.js';
+import { notificationStore } from '../stores/notificationStore.js';
+
 (function() {
     document.addEventListener('DOMContentLoaded', init);
     
     function init() {
-        console.log('App initialized');
+        console.log('AutoFlow App initialized');
+        
+        // Load auth state from storage
+        authStore.loadFromStorage();
+        
         initMobileMenu();
         initChat();
+        initAuth();
+        updateUI();
+        
+        // Subscribe to auth changes
+        authStore.subscribe(updateUI);
+    }
+    
+    function updateUI() {
+        const isAuth = authStore.isAuthenticated();
+        const user = authStore.getUser();
+        
+        // Update login button
+        const loginBtn = document.getElementById('login-btn');
+        const loginBtnMobile = document.getElementById('login-btn-mobile');
+        
+        if (isAuth && user) {
+            if (loginBtn) {
+                loginBtn.textContent = 'Dashboard';
+                loginBtn.onclick = () => window.location.href = 'dashboard.html';
+            }
+            if (loginBtnMobile) {
+                loginBtnMobile.textContent = 'Dashboard';
+                loginBtnMobile.onclick = () => window.location.href = 'dashboard.html';
+            }
+        } else {
+            if (loginBtn) {
+                loginBtn.textContent = 'Get Started';
+                loginBtn.onclick = () => window.location.href = 'dashboard.html';
+            }
+            if (loginBtnMobile) {
+                loginBtnMobile.textContent = 'Get Started';
+                loginBtnMobile.onclick = () => window.location.href = 'dashboard.html';
+            }
+        }
+        
+        // Update user info in sidebar
+        const userName = document.querySelector('.user-name');
+        const userPlan = document.querySelector('.user-plan');
+        const userAvatar = document.querySelector('.user-avatar');
+        
+        if (user) {
+            if (userName) userName.textContent = user.name || user.email;
+            if (userPlan) userPlan.textContent = (user.plan || 'free').charAt(0).toUpperCase() + (user.plan || 'free').slice(1) + ' Plan';
+            if (userAvatar) userAvatar.textContent = (user.name || user.email || 'U').charAt(0).toUpperCase();
+        }
+    }
+    
+    function initAuth() {
+        // Login modal/handler if needed
+        const loginHandler = async (email, password) => {
+            try {
+                notificationStore.show('Logging in...', 'info');
+                await authService.login(email, password);
+                notificationStore.show('Login successful!', 'success');
+                window.location.href = 'dashboard.html';
+            } catch (e) {
+                notificationStore.show(e.message || 'Login failed', 'error');
+            }
+        };
+        
+        // Register handler
+        const registerHandler = async (email, name, password) => {
+            try {
+                notificationStore.show('Creating account...', 'info');
+                await authService.register(email, name, password);
+                notificationStore.show('Account created!', 'success');
+                window.location.href = 'dashboard.html';
+            } catch (e) {
+                notificationStore.show(e.message || 'Registration failed', 'error');
+            }
+        };
+        
+        // Expose to global scope for HTML onclick handlers
+        window.authHandlers = {
+            login: loginHandler,
+            register: registerHandler
+        };
     }
     
     function initMobileMenu() {
